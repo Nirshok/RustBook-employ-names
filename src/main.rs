@@ -1,75 +1,56 @@
 use std::io;
 use std::collections::HashMap;
+use employ_names::*;
+
 fn main() {
     let mut workers: HashMap<String, Vec<String>> = HashMap::new();
     'outer: loop {
 
-        println!("Input: \"Add *name* to *department*\"\n Press \"Enter\" to advance.\n");
+        println!("Input: \"Add *name* to *department*\"\n(Input space or nothing to advance.)\n");
 
         let mut add_name = String::new();
 
             io::stdin()
                 .read_line(&mut add_name)
                 .expect("Failed to read the line");
-        
-        let words: Vec<&str> = add_name.split_whitespace().collect();
-        //println!("{:?}", &words);
-        let lenght = words.len();
-        //println!("{:?}", &lenght);
 
-        if lenght == 4 {
-                        
-            let name = words[1];
-            let depart = words[3];
-            //handle the error with lenght less than 3
-            workers.entry(depart.to_string())
-                .or_insert_with(Vec::new)
-                .push(name.to_string());
-            //println!("{:?}", workers.get(depart));
+        let words = into_str_vec(&add_name);
+        let lenght = words.len();
+
+        if lenght == 4 {                        
+            insert_k_v(&mut workers, words);
             continue 'outer;
 
         } else if lenght < 4 && lenght > 0 || lenght > 4 {
             println!("Wrong input!\n");
             continue 'outer;
         }
-            
-        
-        //println!("{:?}", workers);
 
-        println!("Which department's names would you like to access?");
+        remove_copies(&mut workers);  
 
+        loop {
+        println!("Which department's names would you like to access?\n(Input space or nothing to finish this session.)");
 
         let mut department = String::new();
-
+        
             io::stdin()
                 .read_line(&mut department)
                 .expect("Failed to read the line");
+
+        match map_output(department, &mut workers) {
+            0 | 2 => continue 'outer,
+            1 => continue,
+            3 => break,
+            _ => {
+                println!("Unknown error");
+                break;
+            },
+        }
+
         
-        let departkey = department.trim().to_string();
-        if workers.contains_key(&departkey) == true {
-
-            let names = match workers.get_mut(&departkey) {
-                Some(val) => val,
-                None => {
-                    println!("There is no one in this department.");
-                    continue 'outer;
-                }
-            };
-            
-            names.sort();
-            println!("People in {}are:{:#?}", departkey, names);
-            break 'outer;
-
-        } else {
-            println!("This department is not written in!");
-            continue 'outer;
-        }                                           
-
+    }
+    break;
     }
 
     
 }
-
-//Using a hash map and vectors, create a text interface to allow a user to add employee names to a department in a company. 
-//For example, “Add Sally to Engineering” or “Add Amir to Sales.” 
-//Then let the user retrieve a list of all people in a department or all people in the company by department, sorted alphabetically.
