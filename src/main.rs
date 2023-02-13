@@ -29,26 +29,25 @@ fn main() {
         remove_copies(&mut workers);  
 
         loop {
-        println!("Which department's names would you like to access?\n(Input space or nothing to finish this session.)");
+            println!("Which department's names would you like to access?\n(Input space or nothing to finish this session.)");
 
-        let mut department = String::new();
+            let mut department = String::new();
         
             io::stdin()
                 .read_line(&mut department)
                 .expect("Failed to read the line");
 
-        match map_output(department, &mut workers) {
-            0 | 2 => continue 'outer,
-            1 => continue,
-            3 => break,
-            _ => {
-                println!("Unknown error");
-                break;
-            },
-        }
+            match map_output(department, &mut workers) {
+                0 | 2 => continue 'outer,
+                1 => continue,
+                3 => break,
+                _ => {
+                    println!("Unknown error");
+                    break;
+                },
+            }
 
-        
-    }
+        }
     break;
     }
 
